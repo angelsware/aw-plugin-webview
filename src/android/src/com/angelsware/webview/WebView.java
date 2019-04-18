@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 import android.view.View;
 import android.app.Activity;
 
+import com.angelsware.engine.AppActivity;
+
 public class WebView {
 	private static android.webkit.WebView sWebView;
 	private static JsInterface sJsInterface;

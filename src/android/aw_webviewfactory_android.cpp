@@ -1,7 +1,7 @@
-#include <platform/aw_webviewfactory.h>
+#include <webview/aw_webviewfactory.h>
 #include "aw_webview_android.h"
 
-namespace Platform {
+namespace WebView {
 	IWebView* CWebViewFactory::create() {
 		return new CWebView_Android();
 	}

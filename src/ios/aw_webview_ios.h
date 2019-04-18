@@ -1,9 +1,9 @@
-#ifndef __AW_WEB_VIEW_IOS_H__
-#define __AW_WEB_VIEW_IOS_H__
+#ifndef __AW_WEB_VIEW_WEB_VIEW_IOS_H__
+#define __WEB_VIEW_AW_WEB_VIEW_IOS_H__
 
 #include <webview/aw_webview.h>
 
-namespace Platform {
+namespace WebView {
 	class CWebView_Ios
 		: public IWebView
 	{

@@ -1,9 +1,9 @@
 #include "aw_webview_android.h"
-#include <platform/android/aw_jni.h>
-#include <platform/android/aw_jnifunction.h>
-#include <platform/android/aw_jnistring.h>
+#include <webview/android/aw_jni.h>
+#include <webview/android/aw_jnifunction.h>
+#include <webview/android/aw_jnistring.h>
 
-namespace Platform {
+namespace WebView {
 	void CWebView_Android::setVisible(bool visible) {
 		if (jclass clazz = Platform::CJniFunction::getClass("com/angelsware/engine/WebView")) {
 			if (jmethodID method = Platform::CJniFunction::getMethod(clazz, "setVisible", "(Z)V")) {

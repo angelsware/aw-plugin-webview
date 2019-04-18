@@ -1,9 +1,9 @@
-#ifndef __AW_WEB_VIEW_ANDROID_H__
-#define __AW_WEB_VIEW_ANDROID_H__
+#ifndef __AW_WEB_VIEW_WEB_VIEW_ANDROID_H__
+#define __AW_WEB_VIEW_WEB_VIEW_ANDROID_H__
 
 #include <webview/aw_webview.h>
 
-namespace Platform {
+namespace WebView {
 	class CWebView_Android
 		: public IWebView
 	{

@@ -4,7 +4,7 @@ Web view plugin for Angels' Ware rendering engine.
 
 ### Getting Started
 
-Add the **plugins** section the **config.json** file of your project.
+Add the **plugins** section to the **config.json** file of your project.
 
 ```
 {

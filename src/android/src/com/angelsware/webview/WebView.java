@@ -12,6 +12,14 @@ public class WebView {
 	private static android.webkit.WebView sWebView;
 	private static JsInterface sJsInterface;
 
+	private class WebViewClient extends android.webkit.WebViewClient {
+		@Override
+		public boolean shouldOverrideUrlLoading(android.webkit.WebView webView, String url) {
+			webView.loadUrl(url);
+			return true;
+		}
+	}
+
 	public static void onCreate() {
 		AppActivity.getActivity().runOnUiThread(new Runnable() {
 			@Override
@@ -19,11 +27,17 @@ public class WebView {
 				sWebView = new android.webkit.WebView(AppActivity.getActivity());
 				sJsInterface = new JsInterface();
 				sWebView.setWebChromeClient(new WebChromeClient());
+				sWebView.setWebViewClient(new android.webkit.WebViewClient());
 				sWebView.addJavascriptInterface(sJsInterface, "native");
 				sWebView.setBackgroundColor(0x00000000);
 				WebSettings webSettings = sWebView.getSettings();
 				webSettings.setJavaScriptEnabled(true);
 				webSettings.setDomStorageEnabled(true);
+				webSettings.setDatabaseEnabled(true);
+				webSettings.setAllowFileAccess(true);
+				webSettings.setAllowFileAccessFromFileURLs(true);
+				webSettings.setAllowContentAccess(true);
+				webSettings.setAllowUniversalAccessFromFileURLs(true);
 				AppActivity.getActivity().addContentView(sWebView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 			}
 		});
@@ -68,7 +82,6 @@ public class WebView {
 		AppActivity.getActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				Activity activity = AppActivity.getActivity();
 				sWebView.loadDataWithBaseURL("file:///android_asset/www/", data, mimeType, encoding, null);
 			}
 		});
@@ -97,6 +110,15 @@ public class WebView {
 			@Override
 			public void run() {
 				sWebView.stopLoading();
+			}
+		});
+	}
+
+	public static void clearHistory() {
+		AppActivity.getActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				sWebView.clearHistory();
 			}
 		});
 	}

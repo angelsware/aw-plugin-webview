@@ -6,6 +6,8 @@ namespace Rendering {
 }
 
 namespace WebView {
+	class IMessageListener;
+
 	class IWebView
 	{
 	public:
@@ -22,6 +24,9 @@ namespace WebView {
 		virtual void reload() = 0;
 		virtual void stopLoading() = 0;
 		virtual void setBackgroundColor(const Rendering::CColor& color) = 0;
+		virtual void addListener(IMessageListener* listener) = 0;
+		virtual void removeListener(IMessageListener* listener) = 0;
+		virtual void clearAllListeners() = 0;
 	};
 }
 

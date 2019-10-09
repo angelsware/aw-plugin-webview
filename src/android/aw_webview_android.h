@@ -19,6 +19,9 @@ namespace WebView {
 		void reload() override;
 		void stopLoading() override;
 		void setBackgroundColor(const Rendering::CColor& color) override;
+		void addListener(IMessageListener* listener) override;
+		void removeListener(IMessageListener* listener) override;
+		void clearAllListeners() override;
 	};
 }
 

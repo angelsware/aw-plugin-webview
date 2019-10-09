@@ -4,6 +4,8 @@
 #include <webview/aw_webview.h>
 
 namespace WebView {
+	class IMessageListener;
+
 	class CWebView_Ios
 		: public IWebView
 	{
@@ -19,6 +21,9 @@ namespace WebView {
 		void reload() override {}
 		void stopLoading() override {}
 		void setBackgroundColor(const Rendering::CColor& color) override {}
+		void addListener(IMessageListener* listener) override {}
+		void removeListener(IMessageListener* listener) override {}
+		void clearAllListeners() override {}
 	};
 }
 

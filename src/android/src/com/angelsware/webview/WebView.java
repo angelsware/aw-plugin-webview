@@ -5,6 +5,7 @@ import android.webkit.WebSettings;
 import android.view.ViewGroup;
 import android.view.View;
 import android.app.Activity;
+import android.graphics.Color;
 
 import com.angelsware.engine.AppActivity;
 
@@ -129,5 +130,9 @@ public class WebView {
 			public void run() {
 			}
 		});
+	}
+
+	public static void setBackGroundColor(String color) {
+		sWebView.setBackgroundColor(Color.parseColor(color));
 	}
 }

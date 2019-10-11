@@ -2,6 +2,7 @@
 #include <platform/android/aw_jni.h>
 #include <platform/android/aw_jnifunction.h>
 #include <platform/android/aw_jnistring.h>
+#include <rendering/aw_color.h>
 
 namespace WebView {
 	void CWebView_Android::setVisible(bool visible) {
@@ -91,6 +92,11 @@ namespace WebView {
 	}
 
 	void CWebView_Android::setBackgroundColor(const Rendering::CColor& color) {
+		if (jclass clazz = Platform::CJniFunction::getClass("com/angelsware/webview/WebView")) {
+			if (jmethodID method = Platform::CJniFunction::getMethod(clazz, "setBackgroundColor", "(I)V")) {
+				Platform::CJni::getEnv()->CallStaticVoidMethod(clazz, method, color.toInt());
+			}
+		}
 	}
 
 	void CWebView_Android::addListener(IMessageListener* listener) {

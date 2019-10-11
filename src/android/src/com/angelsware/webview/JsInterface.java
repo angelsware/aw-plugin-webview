@@ -54,4 +54,9 @@ public class JsInterface {
 			}
 		});
 	}
+
+	@JavascriptInterface
+	public void setBackgroundColor(final String color) {
+		WebView.setBackGroundColor(color);
+	}
 }

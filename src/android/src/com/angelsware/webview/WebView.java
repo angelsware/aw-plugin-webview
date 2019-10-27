@@ -29,6 +29,7 @@ public class WebView {
 				sJsInterface = new JsInterface();
 				sWebView.setWebChromeClient(new WebChromeClient());
 				sWebView.setWebViewClient(new android.webkit.WebViewClient());
+				sWebView.setWebContentsDebuggingEnabled(true);
 				sWebView.addJavascriptInterface(sJsInterface, "native");
 				sWebView.setBackgroundColor(0x00000000);
 				WebSettings webSettings = sWebView.getSettings();

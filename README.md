@@ -7,16 +7,10 @@ Web view plugin for Angels' Ware rendering engine.
 Add the **plugins** section to the **config.json** file of your project.
 
 ```
-{
-	...
+...
 
-	"plugins":[
-		{
-			"repo":"https://github.com/angelsware/aw-plugin-webview.git",
-			"tag":"*"
-		}
-	]
-}
+plugins:
+	repo: https://github.com/angelsware/aw-plugin-webview.git
 ```
 
 ```

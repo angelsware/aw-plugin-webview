@@ -2,12 +2,20 @@ package com.angelsware.webview;
 
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
+import android.webkit.DownloadListener;
 import android.view.ViewGroup;
 import android.view.View;
 import android.app.Activity;
 import android.graphics.Color;
+import android.app.DownloadManager;
+import android.widget.Toast;
+import android.net.Uri;
+import android.os.Environment;
+import android.content.Context;
 
 import com.angelsware.engine.AppActivity;
+
+import android.util.Log;
 
 public class WebView {
 	private static android.webkit.WebView sWebView;
@@ -32,6 +40,18 @@ public class WebView {
 				sWebView.setWebContentsDebuggingEnabled(true);
 				sWebView.addJavascriptInterface(sJsInterface, "native");
 				sWebView.setBackgroundColor(0x00000000);
+				sWebView.setDownloadListener(new DownloadListener() {
+					@Override
+					public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+						DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+						request.allowScanningByMediaScanner();
+						request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+						request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "document"); // TODO: Fix proper name.
+						DownloadManager dm = (DownloadManager)AppActivity.getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+						dm.enqueue(request);
+						Toast.makeText(AppActivity.getActivity(), "Downloading File", Toast.LENGTH_LONG).show();
+					}
+				});
 				WebSettings webSettings = sWebView.getSettings();
 				webSettings.setJavaScriptEnabled(true);
 				webSettings.setDomStorageEnabled(true);

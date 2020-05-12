@@ -16,6 +16,7 @@ namespace WebView {
 		virtual void setVisible(bool visible) = 0;
 		virtual bool isVisible() = 0;
 		virtual void onCreate() = 0;
+		virtual void addOpenExternally(const char* urlStartsWith) = 0;
 		virtual void goBack() = 0;
 		virtual void goForward() = 0;
 		virtual void evaluateJavascript(const char* data) = 0;

@@ -1,31 +1,49 @@
 package com.angelsware.webview;
 
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.DownloadListener;
 import android.view.ViewGroup;
 import android.view.View;
-import android.app.Activity;
 import android.graphics.Color;
 import android.app.DownloadManager;
 import android.widget.Toast;
 import android.net.Uri;
 import android.os.Environment;
 import android.content.Context;
+import android.content.Intent;
 
 import com.angelsware.engine.AppActivity;
 
-import android.util.Log;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WebView {
 	private static android.webkit.WebView sWebView;
 	private static JsInterface sJsInterface;
+	private static List<String> sOpenExternally = new ArrayList<>();
 
-	private class WebViewClient extends android.webkit.WebViewClient {
+	private static class WebViewClient extends android.webkit.WebViewClient {
 		@Override
-		public boolean shouldOverrideUrlLoading(android.webkit.WebView webView, String url) {
-			webView.loadUrl(url);
+		public boolean shouldOverrideUrlLoading(android.webkit.WebView webView, WebResourceRequest request) {
+			String url = request.getUrl().toString();
+			if (isOpenExternally(url)) {
+				Intent i = new Intent(Intent.ACTION_VIEW, request.getUrl());
+				AppActivity.getActivity().startActivity(i);
+			} else {
+				webView.loadUrl(url);
+			}
 			return true;
+		}
+
+		private boolean isOpenExternally(String url) {
+			for (int i = 0; i < sOpenExternally.size(); ++i) {
+				if (url.startsWith(sOpenExternally.get(i))) {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 
@@ -36,7 +54,7 @@ public class WebView {
 				sWebView = new android.webkit.WebView(AppActivity.getActivity());
 				sJsInterface = new JsInterface();
 				sWebView.setWebChromeClient(new WebChromeClient());
-				sWebView.setWebViewClient(new android.webkit.WebViewClient());
+				sWebView.setWebViewClient(new WebViewClient());
 				sWebView.setWebContentsDebuggingEnabled(true);
 				sWebView.addJavascriptInterface(sJsInterface, "native");
 				sWebView.setBackgroundColor(0x00000000);
@@ -71,6 +89,10 @@ public class WebView {
 
 	public static boolean isVisible() {
 		return sWebView.getVisibility() == View.VISIBLE;
+	}
+
+	public static void addOpenExternally(String urlStartsWith) {
+		sOpenExternally.add(urlStartsWith);
 	}
 
 	public static void goBack() {

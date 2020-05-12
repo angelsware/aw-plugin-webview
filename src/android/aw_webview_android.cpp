@@ -30,6 +30,15 @@ namespace WebView {
 		}
 	}
 
+	void CWebView_Android::addOpenExternally(const char* urlStartsWith) {
+		if (jclass clazz = Platform::CJniFunction::getClass("com/angelsware/webview/WebView")) {
+			if (jmethodID method = Platform::CJniFunction::getMethod(clazz, "addOpenExternally", "(Ljava/lang/String;)V")) {
+				Platform::CJniString jniUrlStartsWith(urlStartsWith);
+				Platform::CJni::getEnv()->CallStaticVoidMethod(clazz, method, jniUrlStartsWith.getText());
+			}
+		}
+	}
+
 	void CWebView_Android::goBack() {
 		if (jclass clazz = Platform::CJniFunction::getClass("com/angelsware/webview/WebView")) {
 			if (jmethodID method = Platform::CJniFunction::getMethod(clazz, "goBack", "()V")) {

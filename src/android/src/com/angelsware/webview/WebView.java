@@ -58,6 +58,8 @@ public class WebView {
 				sWebView.setWebContentsDebuggingEnabled(true);
 				sWebView.addJavascriptInterface(sJsInterface, "native");
 				sWebView.setBackgroundColor(0x00000000);
+				sWebView.setVerticalScrollBarEnabled(false);
+				sWebView.setHorizontalScrollBarEnabled(false);
 				sWebView.setDownloadListener(new DownloadListener() {
 					@Override
 					public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {

@@ -7,6 +7,7 @@
 extern "C" {
 #endif
 	JNIEXPORT void JNICALL Java_com_angelsware_webview_JsInterface_onWebViewMessage(JNIEnv* env, jclass clazz, jstring data, jlong listener);
+	JNIEXPORT void JNICALL Java_com_angelsware_webview_JsInterface_onWebViewError(JNIEnv* env, jclass clazz, jstring data, jlong listener);
 #ifdef __cplusplus
 }
 #endif

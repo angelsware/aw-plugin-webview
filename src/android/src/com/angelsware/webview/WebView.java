@@ -37,6 +37,19 @@ public class WebView {
 			return true;
 		}
 
+		@Override
+		public void onReceivedError(android.webkit.WebView webView, int errorCode, String description, String failingUrl) {
+			try {
+				webView.stopLoading();
+			} catch (Exception e) {
+			}
+
+			webView.loadUrl("about:blank");
+			sJsInterface.publishError("{\"description\":\"" + description + "\",\"failing-url\":\"" + failingUrl + "\"}");
+
+			super.onReceivedError(webView, errorCode, description, failingUrl);
+		}
+
 		private boolean isOpenExternally(String url) {
 			for (int i = 0; i < sOpenExternally.size(); ++i) {
 				if (url.startsWith(sOpenExternally.get(i))) {

@@ -13,6 +13,7 @@ public class JsInterface {
 	private static String TAG = "aw";
 
 	public static native void onWebViewMessage(String data, long listener);
+	public static native void onWebViewError(String data, long listener);
 
 	private static List sListeners = new ArrayList();
 
@@ -50,6 +51,18 @@ public class JsInterface {
 				for (Iterator<Long> i = sListeners.iterator(); i.hasNext();) {
 					Long listener = i.next();
 					onWebViewMessage(data, (long)listener);
+				}
+			}
+		});
+	}
+
+	@JavascriptInterface
+	public void publishError(final String data) {
+		AppActivity.getActivity().runOnUiThread(new Runnable() {
+			public void run() {
+				for (Iterator<Long> i = sListeners.iterator(); i.hasNext();) {
+					Long listener = i.next();
+					onWebViewError(data, (long)listener);
 				}
 			}
 		});

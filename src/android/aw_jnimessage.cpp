@@ -8,3 +8,10 @@ JNIEXPORT void JNICALL Java_com_angelsware_webview_JsInterface_onWebViewMessage(
 		ptr->onWebViewMessage(dataStr.getText());
 	}
 }
+
+JNIEXPORT void JNICALL Java_com_angelsware_webview_JsInterface_onWebViewError(JNIEnv* env, jclass clazz, jstring data, jlong listener) {
+	if (WebView::IMessageListener* ptr = reinterpret_cast<WebView::IMessageListener*>(listener)) {
+		Platform::CJniNativeString dataStr(data);
+		ptr->onWebViewError(dataStr.getText());
+	}
+}

@@ -6,6 +6,7 @@ namespace WebView {
 	{
 	public:
 		virtual void onWebViewMessage(const char* data) = 0;
+		virtual void onWebViewError(const char* data) = 0;
 
 	protected:
 		virtual ~IMessageListener() {}

@@ -76,10 +76,15 @@ public class WebView {
 				sWebView.setDownloadListener(new DownloadListener() {
 					@Override
 					public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-						DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+						Uri uri = Uri.parse(url);
+						String filename = uri.getQueryParameter("filename");
+						if (filename == null || filename.equals("")) {
+							filename = "document";
+						}
+						DownloadManager.Request request = new DownloadManager.Request(uri);
 						request.allowScanningByMediaScanner();
 						request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-						request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "document"); // TODO: Fix proper name.
+						request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
 						DownloadManager dm = (DownloadManager)AppActivity.getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
 						dm.enqueue(request);
 						Toast.makeText(AppActivity.getActivity(), "Downloading File", Toast.LENGTH_LONG).show();

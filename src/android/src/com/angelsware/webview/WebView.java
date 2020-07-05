@@ -1,5 +1,7 @@
 package com.angelsware.webview;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -15,9 +17,12 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.angelsware.engine.AppActivity;
+import com.angelsware.engine.RequestPermissionResultListener;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.core.content.ContextCompat;
 
 public class WebView {
 	private static android.webkit.WebView sWebView;
@@ -41,7 +46,7 @@ public class WebView {
 		public void onReceivedError(android.webkit.WebView webView, int errorCode, String description, String failingUrl) {
 			try {
 				webView.stopLoading();
-			} catch (Exception e) {
+			} catch (Exception ignored) {
 			}
 
 			webView.loadUrl("about:blank");
@@ -64,32 +69,66 @@ public class WebView {
 		AppActivity.getActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				sWebView = new android.webkit.WebView(AppActivity.getActivity());
-				sJsInterface = new JsInterface();
-				sWebView.setWebChromeClient(new WebChromeClient());
-				sWebView.setWebViewClient(new WebViewClient());
-				sWebView.setWebContentsDebuggingEnabled(true);
-				sWebView.addJavascriptInterface(sJsInterface, "native");
-				sWebView.setBackgroundColor(0x00000000);
-				sWebView.setVerticalScrollBarEnabled(false);
-				sWebView.setHorizontalScrollBarEnabled(false);
-				sWebView.setDownloadListener(new DownloadListener() {
+				class WebViewDownloadListener implements RequestPermissionResultListener, DownloadListener {
+					private String mUrl;
+
+					WebViewDownloadListener() {
+						// TODO: This listener is never removed which can potentially lead to a crash.
+						AppActivity appActivity = (AppActivity)AppActivity.getActivity();
+						appActivity.addRequestPermissionResultListener(this);
+					}
+
 					@Override
 					public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+						if (ContextCompat.checkSelfPermission(AppActivity.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+							download(url);
+						} else {
+							this.mUrl = url;
+							AppActivity.getActivity().requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 84262);
+						}
+					}
+
+					private void download(String url) {
 						Uri uri = Uri.parse(url);
 						String filename = uri.getQueryParameter("filename");
 						if (filename == null || filename.equals("")) {
 							filename = "document";
 						}
+						String toast = uri.getQueryParameter("toast");
+
 						DownloadManager.Request request = new DownloadManager.Request(uri);
 						request.allowScanningByMediaScanner();
 						request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 						request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
 						DownloadManager dm = (DownloadManager)AppActivity.getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
 						dm.enqueue(request);
-						Toast.makeText(AppActivity.getActivity(), "Downloading File", Toast.LENGTH_LONG).show();
+						if (toast != null) {
+							Toast.makeText(AppActivity.getActivity(), toast, Toast.LENGTH_LONG).show();
+						}
 					}
-				});
+
+					@Override
+					public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+						if (requestCode == 84262 && permissions.length > 0) {
+							for (int grantResult : grantResults) {
+								if (grantResult != PackageManager.PERMISSION_GRANTED) {
+									return;
+								}
+							}
+							download(this.mUrl);
+						}
+						this.mUrl = "";
+					}
+				}
+				sWebView = new android.webkit.WebView(AppActivity.getActivity());
+				sJsInterface = new JsInterface();
+				sWebView.setWebChromeClient(new WebChromeClient());
+				sWebView.setWebViewClient(new WebViewClient());
+				sWebView.addJavascriptInterface(sJsInterface, "native");
+				sWebView.setBackgroundColor(0x00000000);
+				sWebView.setVerticalScrollBarEnabled(false);
+				sWebView.setHorizontalScrollBarEnabled(false);
+				sWebView.setDownloadListener(new WebViewDownloadListener());
 				WebSettings webSettings = sWebView.getSettings();
 				webSettings.setJavaScriptEnabled(true);
 				webSettings.setDomStorageEnabled(true);

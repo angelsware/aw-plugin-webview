@@ -28,8 +28,65 @@ public class WebView {
 	private static android.webkit.WebView sWebView;
 	private static JsInterface sJsInterface;
 	private static List<String> sOpenExternally = new ArrayList<>();
+	private static WebViewClient.WebViewDownloadListener mDownloadListener;
 
 	private static class WebViewClient extends android.webkit.WebViewClient {
+		static class WebViewDownloadListener implements RequestPermissionResultListener, DownloadListener {
+			private String mUrl;
+
+			WebViewDownloadListener() {
+				AppActivity appActivity = (AppActivity)AppActivity.getActivity();
+				appActivity.addRequestPermissionResultListener(this);
+			}
+
+			public void destroy() {
+				AppActivity appActivity = (AppActivity)AppActivity.getActivity();
+				appActivity.removeRequestPermissionResultListener(this);
+			}
+
+			@Override
+			public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+				if (ContextCompat.checkSelfPermission(AppActivity.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+					download(url);
+				} else {
+					this.mUrl = url;
+					AppActivity.getActivity().requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 84262);
+				}
+			}
+
+			private void download(String url) {
+				Uri uri = Uri.parse(url);
+				String filename = uri.getQueryParameter("filename");
+				if (filename == null || filename.equals("")) {
+					filename = "document";
+				}
+				String toast = uri.getQueryParameter("toast");
+
+				DownloadManager.Request request = new DownloadManager.Request(uri);
+				request.allowScanningByMediaScanner();
+				request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+				request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
+				DownloadManager dm = (DownloadManager)AppActivity.getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+				dm.enqueue(request);
+				if (toast != null) {
+					Toast.makeText(AppActivity.getActivity(), toast, Toast.LENGTH_LONG).show();
+				}
+			}
+
+			@Override
+			public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+				if (requestCode == 84262 && permissions.length > 0) {
+					for (int grantResult : grantResults) {
+						if (grantResult != PackageManager.PERMISSION_GRANTED) {
+							return;
+						}
+					}
+					download(this.mUrl);
+				}
+				this.mUrl = "";
+			}
+		}
+
 		@Override
 		public boolean shouldOverrideUrlLoading(android.webkit.WebView webView, WebResourceRequest request) {
 			String url = request.getUrl().toString();
@@ -66,60 +123,10 @@ public class WebView {
 	}
 
 	public static void onCreate() {
+		mDownloadListener = new WebViewClient.WebViewDownloadListener();
 		AppActivity.getActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				class WebViewDownloadListener implements RequestPermissionResultListener, DownloadListener {
-					private String mUrl;
-
-					WebViewDownloadListener() {
-						// TODO: This listener is never removed which can potentially lead to a crash.
-						AppActivity appActivity = (AppActivity)AppActivity.getActivity();
-						appActivity.addRequestPermissionResultListener(this);
-					}
-
-					@Override
-					public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-						if (ContextCompat.checkSelfPermission(AppActivity.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-							download(url);
-						} else {
-							this.mUrl = url;
-							AppActivity.getActivity().requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 84262);
-						}
-					}
-
-					private void download(String url) {
-						Uri uri = Uri.parse(url);
-						String filename = uri.getQueryParameter("filename");
-						if (filename == null || filename.equals("")) {
-							filename = "document";
-						}
-						String toast = uri.getQueryParameter("toast");
-
-						DownloadManager.Request request = new DownloadManager.Request(uri);
-						request.allowScanningByMediaScanner();
-						request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-						request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
-						DownloadManager dm = (DownloadManager)AppActivity.getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
-						dm.enqueue(request);
-						if (toast != null) {
-							Toast.makeText(AppActivity.getActivity(), toast, Toast.LENGTH_LONG).show();
-						}
-					}
-
-					@Override
-					public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-						if (requestCode == 84262 && permissions.length > 0) {
-							for (int grantResult : grantResults) {
-								if (grantResult != PackageManager.PERMISSION_GRANTED) {
-									return;
-								}
-							}
-							download(this.mUrl);
-						}
-						this.mUrl = "";
-					}
-				}
 				sWebView = new android.webkit.WebView(AppActivity.getActivity());
 				sJsInterface = new JsInterface();
 				sWebView.setWebChromeClient(new WebChromeClient());
@@ -128,7 +135,7 @@ public class WebView {
 				sWebView.setBackgroundColor(0x00000000);
 				sWebView.setVerticalScrollBarEnabled(false);
 				sWebView.setHorizontalScrollBarEnabled(false);
-				sWebView.setDownloadListener(new WebViewDownloadListener());
+				sWebView.setDownloadListener(mDownloadListener);
 				WebSettings webSettings = sWebView.getSettings();
 				webSettings.setJavaScriptEnabled(true);
 				webSettings.setDomStorageEnabled(true);
@@ -140,6 +147,10 @@ public class WebView {
 				AppActivity.getActivity().addContentView(sWebView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 			}
 		});
+	}
+
+	public static void onDestroy() {
+		mDownloadListener.destroy();
 	}
 
 	public static void setVisible(boolean visible) {

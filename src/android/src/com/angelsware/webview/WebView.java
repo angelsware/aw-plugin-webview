@@ -1,7 +1,10 @@
 package com.angelsware.webview;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.util.Pair;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -33,13 +36,32 @@ public class WebView {
 	private static class WebViewClient extends android.webkit.WebViewClient {
 		static class WebViewDownloadListener implements RequestPermissionResultListener, DownloadListener {
 			private String mUrl;
+			private List<Pair<Long, String>> mDownloadIds = new ArrayList<>();
+
+			private BroadcastReceiver mOnDownloadComplete = new BroadcastReceiver() {
+				@Override
+				public void onReceive(Context context, Intent intent) {
+					long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+					for (Pair<Long, String> element : mDownloadIds) {
+						if (element.first == id) {
+							if (element.second != null) {
+								Toast.makeText(AppActivity.getActivity(), element.second, Toast.LENGTH_LONG).show();
+							}
+							mDownloadIds.remove(element);
+							break;
+						}
+					}
+				}
+			};
 
 			WebViewDownloadListener() {
 				AppActivity appActivity = (AppActivity)AppActivity.getActivity();
 				appActivity.addRequestPermissionResultListener(this);
+				AppActivity.getActivity().registerReceiver(mOnDownloadComplete,new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 			}
 
 			public void destroy() {
+				AppActivity.getActivity().unregisterReceiver(mOnDownloadComplete);
 				AppActivity appActivity = (AppActivity)AppActivity.getActivity();
 				appActivity.removeRequestPermissionResultListener(this);
 			}
@@ -67,7 +89,7 @@ public class WebView {
 				request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 				request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
 				DownloadManager dm = (DownloadManager)AppActivity.getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
-				dm.enqueue(request);
+				mDownloadIds.add(new Pair<>(dm.enqueue(request), uri.getQueryParameter("complete_toast")));
 				if (toast != null) {
 					Toast.makeText(AppActivity.getActivity(), toast, Toast.LENGTH_LONG).show();
 				}

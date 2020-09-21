@@ -14,6 +14,7 @@ namespace WebView {
 		bool isVisible() override { return false; }
 		void onCreate() override {}
 		void onDestroy() override {}
+		void addOpenExternally(const char* urlStartsWith) override {}
 		void goBack() override {}
 		void goForward() override {}
 		void evaluateJavascript(const char* data) override {}

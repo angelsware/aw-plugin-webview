@@ -20,6 +20,7 @@ namespace WebView {
 		void evaluateJavascript(const char* data) override {}
 		void loadData(const char* data, const char* mimeType, const char* encoding) override {}
 		void loadUrl(const char* url) override {}
+		void loadFile(const char* filename) override {}
 		void reload() override {}
 		void stopLoading() override {}
 		void setBackgroundColor(const Rendering::CColor& color) override {}

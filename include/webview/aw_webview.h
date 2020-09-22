@@ -23,6 +23,7 @@ namespace WebView {
 		virtual void evaluateJavascript(const char* data) = 0;
 		virtual void loadData(const char* data, const char* mimeType, const char* encoding) = 0;
 		virtual void loadUrl(const char* url) = 0;
+		virtual void loadFile(const char* filename) = 0;
 		virtual void reload() = 0;
 		virtual void stopLoading() = 0;
 		virtual void setBackgroundColor(const Rendering::CColor& color) = 0;

@@ -1,11 +1,22 @@
 import WebKit
 
-class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
+class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        print(message.body) // TODO: Pass to listeners.
+        listeners.forEach { listener in
+            
+        }
+    }
+    
 	@IBOutlet var webView: WKWebView!
+    let listeners: Set<Int64> = Set()
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		let webConfig = WKWebViewConfiguration()
+        let userContentController = WKUserContentController()
+        userContentController.add(self, name: "native")
+        webConfig.userContentController = userContentController
 		webView = WKWebView(frame: .zero, configuration: webConfig)
 		webView.navigationDelegate = self
 		webView.uiDelegate = self

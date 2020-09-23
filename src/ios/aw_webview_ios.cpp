@@ -6,6 +6,7 @@ extern "C" {
 	void WebView_loadUrl(void* ptr);
 	void WebView_loadData(void* ptr, const char* data, const char* mimeType, const char* encoding);
 	void WebView_loadFile(void* ptr, const char* name, const char* extension, const char* directory);
+    void WebView_evaluateJavaScript(void* ptr, const char* data);
 	void WebView_addListener(void* ptr, long long listener);
 	void WebView_removeListener(void* ptr, long long listener);
 	void WebView_clearAllListeners(void* ptr);
@@ -26,8 +27,12 @@ namespace WebView {
 	void CWebView_Ios::addOpenExternally(const char* urlStartsWith) {}
 	void CWebView_Ios::goBack() {}
 	void CWebView_Ios::goForward() {}
-	void CWebView_Ios::evaluateJavascript(const char* data) {}
-	void CWebView_Ios::loadData(const char* data, const char* mimeType, const char* encoding) {
+
+    void CWebView_Ios::evaluateJavascript(const char* data) {
+        WebView_evaluateJavaScript(mWebView, data);
+    }
+
+    void CWebView_Ios::loadData(const char* data, const char* mimeType, const char* encoding) {
 		WebView_loadData(mWebView, data, mimeType, encoding);
 	}
 

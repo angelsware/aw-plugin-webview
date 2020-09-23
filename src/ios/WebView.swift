@@ -42,6 +42,10 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
 		}
 	}
 
+    func evaluateJavaScript(data: String) {
+        webView.evaluateJavaScript(data)
+    }
+    
 	func addListener(listener: Int64) {
 		listeners.insert(listener)
 	}
@@ -84,6 +88,11 @@ func WebView_loadData(ptr: UnsafeMutablePointer<WebViewController>, data: Unsafe
 @_cdecl("WebView_loadFile")
 func WebView_loadFile(ptr: UnsafeMutablePointer<WebViewController>, name: UnsafePointer<CChar>, ext: UnsafePointer<CChar>, directory: UnsafePointer<CChar>) {
     ptr.pointee.loadFile(name: String.init(cString: name), ext: String.init(cString: ext), directory: String.init(cString: directory))
+}
+
+@_cdecl("WebView_evaluateJavaScript")
+func WebView_evaluateJavaScript(ptr: UnsafeMutablePointer<WebViewController>, data: UnsafePointer<CChar>) {
+    ptr.pointee.evaluateJavaScript(data: String.init(cString: data))
 }
 
 @_cdecl("WebView_addListener")

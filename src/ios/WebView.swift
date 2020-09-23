@@ -53,6 +53,10 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
 	func clearAllListeners() {
 		listeners.removeAll()
 	}
+
+	func execJavaScriptFunction(functionName: String, b64EncodedParameters: String) {
+
+	}
 }
 
 @_cdecl("WebView_create")
@@ -99,4 +103,9 @@ func WebView_removeListener(ptr: UnsafeMutablePointer<WebViewController>, listen
 @_cdecl("WebView_clearAllListeners")
 func WebView_clearAllListeners(ptr: UnsafeMutablePointer<WebViewController>) {
 	ptr.pointee.clearAllListeners()
+}
+
+@_cdecl("WebView_execJavascriptFunction")
+func WebView_execJavascriptFunction(ptr: UnsafeMutablePointer<WebViewController>, functionName: UnsafePointer<CChar>, b64EncodedParameters: UnsafePointer<CChar>) {
+	ptr.pointee.execJavaScriptFunction(functionName: String.init(cString: functionName), b64EncodedParameters: String.init(cString: b64EncodedParameters))
 }

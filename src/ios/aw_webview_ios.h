@@ -18,6 +18,7 @@ namespace WebView {
 		void goBack() override;
 		void goForward() override;
 		void evaluateJavascript(const char* data) override;
+		void execJavascriptFunction(const char* functionName, const char* b64EncodedParameters) override;
 		void loadData(const char* data, const char* mimeType, const char* encoding) override;
 		void loadUrl(const char* url) override;
 		void loadFile(const char* filename) override;

@@ -9,6 +9,7 @@ extern "C" {
 	void WebView_addListener(void* ptr, long long listener);
 	void WebView_removeListener(void* ptr, long long listener);
 	void WebView_clearAllListeners(void* ptr);
+	void WebView_execJavascriptFunction(void* ptr, const char* functionName, const char* b64EncodedParameters);
 }
 
 namespace WebView {
@@ -27,6 +28,11 @@ namespace WebView {
 	void CWebView_Ios::goBack() {}
 	void CWebView_Ios::goForward() {}
 	void CWebView_Ios::evaluateJavascript(const char* data) {}
+
+	void execJavascriptFunction(const char* functionName, const char* b64EncodedParameters) {
+
+	}
+
 	void CWebView_Ios::loadData(const char* data, const char* mimeType, const char* encoding) {
 		WebView_loadData(mWebView, data, mimeType, encoding);
 	}

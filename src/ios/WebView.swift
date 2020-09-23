@@ -2,14 +2,19 @@ import WebKit
 
 class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        print(message.body) // TODO: Pass to listeners.
-        listeners.forEach { listener in
-            
+        if(message.name == "native") {
+            if let dict = message.body as? Dictionary<String, AnyObject> {
+                for (_, value) in dict {
+                    listeners.forEach { listener in
+                        WebViewDelegate.onWebViewMessage(listener, message: (value as! String))
+                    }
+                }
+            }
         }
     }
     
 	@IBOutlet var webView: WKWebView!
-    let listeners: Set<Int64> = Set()
+    var listeners: Set<Int64> = Set()
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -35,6 +40,18 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
 		if let indexURL = Bundle.main.url(forResource: name, withExtension: ext, subdirectory: directory) {
 			webView.loadFileURL(indexURL, allowingReadAccessTo: indexURL)
 		}
+	}
+
+	func addListener(listener: Int64) {
+		listeners.insert(listener)
+	}
+
+	func removeListener(listener: Int64) {
+		listeners.remove(listener)
+	}
+
+	func clearAllListeners() {
+		listeners.removeAll()
 	}
 }
 
@@ -67,4 +84,19 @@ func WebView_loadData(ptr: UnsafeMutablePointer<WebViewController>, data: Unsafe
 @_cdecl("WebView_loadFile")
 func WebView_loadFile(ptr: UnsafeMutablePointer<WebViewController>, name: UnsafePointer<CChar>, ext: UnsafePointer<CChar>, directory: UnsafePointer<CChar>) {
     ptr.pointee.loadFile(name: String.init(cString: name), ext: String.init(cString: ext), directory: String.init(cString: directory))
+}
+
+@_cdecl("WebView_addListener")
+func WebView_addListener(ptr: UnsafeMutablePointer<WebViewController>, listener: Int64) {
+	ptr.pointee.addListener(listener: listener)
+}
+
+@_cdecl("WebView_removeListener")
+func WebView_removeListener(ptr: UnsafeMutablePointer<WebViewController>, listener: Int64) {
+	ptr.pointee.removeListener(listener: listener)
+}
+
+@_cdecl("WebView_clearAllListeners")
+func WebView_clearAllListeners(ptr: UnsafeMutablePointer<WebViewController>) {
+	ptr.pointee.clearAllListeners()
 }

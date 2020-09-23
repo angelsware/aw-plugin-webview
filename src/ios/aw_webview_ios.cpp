@@ -6,6 +6,9 @@ extern "C" {
 	void WebView_loadUrl(void* ptr);
 	void WebView_loadData(void* ptr, const char* data, const char* mimeType, const char* encoding);
 	void WebView_loadFile(void* ptr, const char* name, const char* extension, const char* directory);
+	void WebView_addListener(void* ptr, long long listener);
+	void WebView_removeListener(void* ptr, long long listener);
+	void WebView_clearAllListeners(void* ptr);
 }
 
 namespace WebView {
@@ -40,7 +43,16 @@ namespace WebView {
 	void CWebView_Ios::reload() {}
 	void CWebView_Ios::stopLoading() {}
 	void CWebView_Ios::setBackgroundColor(const Rendering::CColor& color) {}
-	void CWebView_Ios::addListener(IMessageListener* listener) {}
-	void CWebView_Ios::removeListener(IMessageListener* listener) {}
-	void CWebView_Ios::clearAllListeners() {}
+
+	void CWebView_Ios::addListener(IMessageListener* listener) {
+		WebView_addListener(mWebView, reinterpret_cast<long long>(listener));
+	}
+
+	void CWebView_Ios::removeListener(IMessageListener* listener) {
+		WebView_removeListener(mWebView, reinterpret_cast<long long>(listener));
+	}
+
+	void CWebView_Ios::clearAllListeners() {
+		WebView_clearAllListeners(mWebView);
+	}
 }

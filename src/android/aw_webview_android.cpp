@@ -3,6 +3,7 @@
 #include <platform/android/aw_jnifunction.h>
 #include <platform/android/aw_jnistring.h>
 #include <rendering/aw_color.h>
+#include <cstdio>
 
 namespace WebView {
 	void CWebView_Android::setVisible(bool visible) {
@@ -70,6 +71,12 @@ namespace WebView {
 				Platform::CJni::getEnv()->CallStaticVoidMethod(clazz, method, jniData.getText());
 			}
 		}
+	}
+
+	void CWebView_Android::execJavascriptFunction(const char* functionName, const char* b64EncodedParameters) {
+		char buffer[1024] = {0};
+		sprintf(buffer, "%s('%s')", functionName, b64EncodedParameters);
+		evaluateJavascript(buffer);
 	}
 
 	void CWebView_Android::loadData(const char* data, const char* mimeType, const char* encoding) {

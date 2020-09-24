@@ -21,6 +21,7 @@ namespace WebView {
 		virtual void goBack() = 0;
 		virtual void goForward() = 0;
 		virtual void evaluateJavascript(const char* data) = 0;
+		virtual void execJavascriptFunction(const char* functionName, const char* b64EncodedParameters) = 0;
 		virtual void loadData(const char* data, const char* mimeType, const char* encoding) = 0;
 		virtual void loadUrl(const char* url) = 0;
 		virtual void loadFile(const char* filename) = 0;

@@ -134,6 +134,11 @@ public class WebView {
 			super.onReceivedError(webView, errorCode, description, failingUrl);
 		}
 
+		@Override
+		public void onPageFinished(android.webkit.WebView webView, String url) {
+			sJsInterface.onPageFinished();
+		}
+
 		private boolean isOpenExternally(String url) {
 			for (int i = 0; i < sOpenExternally.size(); ++i) {
 				if (url.startsWith(sOpenExternally.get(i))) {

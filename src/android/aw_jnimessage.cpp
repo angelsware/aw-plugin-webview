@@ -15,3 +15,9 @@ JNIEXPORT void JNICALL Java_com_angelsware_webview_JsInterface_onWebViewError(JN
 		ptr->onWebViewError(dataStr.getText());
 	}
 }
+
+JNIEXPORT void JNICALL Java_com_angelsware_webview_JsInterface_onWebViewFinishedLoading(JNIEnv* env, jclass clazz, jlong listener) {
+	if (WebView::IWebViewListener* ptr = reinterpret_cast<WebView::IWebViewListener*>(listener)) {
+		ptr->onWebViewFinishedLoading();
+	}
+}

@@ -14,6 +14,7 @@ public class JsInterface {
 
 	public static native void onWebViewMessage(String data, long listener);
 	public static native void onWebViewError(String data, long listener);
+	public static native void onWebViewFinishedLoading(long listener);
 
 	private static List sListeners = new ArrayList();
 
@@ -63,6 +64,17 @@ public class JsInterface {
 				for (Iterator<Long> i = sListeners.iterator(); i.hasNext();) {
 					Long listener = i.next();
 					onWebViewError(data, (long)listener);
+				}
+			}
+		});
+	}
+
+	public void onPageFinished() {
+		AppActivity.getActivity().runOnUiThread(new Runnable() {
+			public void run() {
+				for (Iterator<Long> i = sListeners.iterator(); i.hasNext();) {
+					Long listener = i.next();
+					onWebViewFinishedLoading((long)listener);
 				}
 			}
 		});

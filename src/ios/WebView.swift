@@ -28,6 +28,12 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
 		view = webView
 	}
 
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+		listeners.forEach { listener in
+			WebViewDelegate.onWebViewFinishedLoading(listener)
+		}
+    }
+
 	func loadUrl(url: String) {
 		webView.load(URLRequest(url: URL(string: url)!))
 	}
@@ -43,9 +49,13 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
 	}
 
     func evaluateJavaScript(data: String) {
-        webView.evaluateJavaScript(data)
+        webView.evaluateJavaScript(data) { (_, error) in
+            if error != nil {
+                print(error!)
+            }
+        }
     }
-    
+   
 	func addListener(listener: Int64) {
 		listeners.insert(listener)
 	}

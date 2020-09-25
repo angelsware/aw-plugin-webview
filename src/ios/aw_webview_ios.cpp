@@ -54,11 +54,11 @@ namespace WebView {
 	void CWebView_Ios::stopLoading() {}
 	void CWebView_Ios::setBackgroundColor(const Rendering::CColor& color) {}
 
-	void CWebView_Ios::addListener(IMessageListener* listener) {
+	void CWebView_Ios::addListener(IWebViewListener* listener) {
 		WebView_addListener(mWebView, reinterpret_cast<long long>(listener));
 	}
 
-	void CWebView_Ios::removeListener(IMessageListener* listener) {
+	void CWebView_Ios::removeListener(IWebViewListener* listener) {
 		WebView_removeListener(mWebView, reinterpret_cast<long long>(listener));
 	}
 

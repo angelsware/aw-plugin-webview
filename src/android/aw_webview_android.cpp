@@ -123,7 +123,7 @@ namespace WebView {
 		}
 	}
 
-	void CWebView_Android::addListener(IMessageListener* listener) {
+	void CWebView_Android::addListener(IWebViewListener* listener) {
 		if (jclass clazz = Platform::CJniFunction::getClass("com/angelsware/webview/JsInterface")) {
 			if (jmethodID method = Platform::CJniFunction::getMethod(clazz, "addListener", "(J)V")) {
 				Platform::CJni::getEnv()->CallStaticVoidMethod(clazz, method, reinterpret_cast<jlong>(listener));
@@ -131,7 +131,7 @@ namespace WebView {
 		}
 	}
 
-	void CWebView_Android::removeListener(IMessageListener* listener) {
+	void CWebView_Android::removeListener(IWebViewListener* listener) {
 		if (jclass clazz = Platform::CJniFunction::getClass("com/angelsware/webview/JsInterface")) {
 			if (jmethodID method = Platform::CJniFunction::getMethod(clazz, "removeListener", "(J)V")) {
 				Platform::CJni::getEnv()->CallStaticVoidMethod(clazz, method, reinterpret_cast<jlong>(listener));

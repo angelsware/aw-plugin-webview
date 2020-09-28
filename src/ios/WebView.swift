@@ -15,6 +15,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
 
 	@IBOutlet var webView: WKWebView!
 	var listeners: Set<Int64> = Set()
+	var openExternally: Set<String> = Set()
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -34,6 +35,19 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
 	func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
 		listeners.forEach { listener in
 			WebViewDelegate.onWebViewFinishedLoading(listener)
+		}
+	}
+	
+	func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+		if (isOpenExternally(url: navigationAction.request.url!.absoluteString)) {
+			if let url = navigationAction.request.url, UIApplication.shared.canOpenURL(url) {
+				UIApplication.shared.open(url)
+				decisionHandler(.cancel)
+			} else {
+				decisionHandler(.allow)
+			}
+		} else {
+			decisionHandler(.allow)
 		}
 	}
 
@@ -73,6 +87,21 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
 
 	func execJavaScriptFunction(functionName: String, b64EncodedParameters: String) {
 
+	}
+	
+	func addOpenExternally(urlStartsWith: String) {
+		openExternally.insert(urlStartsWith)
+	}
+	
+	private func isOpenExternally(url: String) -> Bool {
+		var result = false
+		openExternally.forEach { (openExternally) in
+			if (url.starts(with: openExternally)) {
+				result = true
+				return
+			}
+		}
+		return result
 	}
 }
 
@@ -130,4 +159,9 @@ func WebView_clearAllListeners(ptr: UnsafeMutablePointer<WebViewController>) {
 @_cdecl("WebView_execJavascriptFunction")
 func WebView_execJavascriptFunction(ptr: UnsafeMutablePointer<WebViewController>, functionName: UnsafePointer<CChar>, b64EncodedParameters: UnsafePointer<CChar>) {
 	ptr.pointee.execJavaScriptFunction(functionName: String.init(cString: functionName), b64EncodedParameters: String.init(cString: b64EncodedParameters))
+}
+
+@_cdecl("WebView_addOpenExternally")
+func WebView_addOpenExternally(ptr: UnsafeMutablePointer<WebViewController>, urlStartsWith: UnsafePointer<CChar>) {
+	ptr.pointee.addOpenExternally(urlStartsWith: String.init(cString: urlStartsWith))
 }

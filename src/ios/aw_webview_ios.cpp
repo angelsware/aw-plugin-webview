@@ -11,6 +11,7 @@ extern "C" {
 	void WebView_removeListener(void* ptr, long long listener);
 	void WebView_clearAllListeners(void* ptr);
 	void WebView_execJavascriptFunction(void* ptr, const char* functionName, const char* b64EncodedParameters);
+	void WebView_addOpenExternally(void* ptr, const char* urlStartsWith);
 }
 
 namespace WebView {
@@ -25,7 +26,10 @@ namespace WebView {
 		WebView_destroy(mWebView);
 	}
 
-	void CWebView_Ios::addOpenExternally(const char* urlStartsWith) {}
+	void CWebView_Ios::addOpenExternally(const char* urlStartsWith) {
+		WebView_addOpenExternally(mWebView, urlStartsWith);
+	}
+
 	void CWebView_Ios::goBack() {}
 	void CWebView_Ios::goForward() {}
 

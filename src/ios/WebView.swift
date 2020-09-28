@@ -1,38 +1,41 @@
 import WebKit
 
 class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        if(message.name == "native") {
-            if let dict = message.body as? Dictionary<String, AnyObject> {
-                for (_, value) in dict {
-                    listeners.forEach { listener in
-                        WebViewDelegate.onWebViewMessage(listener, message: (value as! String))
-                    }
-                }
-            }
-        }
-    }
-    
+	func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+		if(message.name == "native") {
+			if let dict = message.body as? Dictionary<String, AnyObject> {
+				for (_, value) in dict {
+					listeners.forEach { listener in
+						WebViewDelegate.onWebViewMessage(listener, message: (value as! String))
+					}
+				}
+			}
+		}
+	}
+
 	@IBOutlet var webView: WKWebView!
-    var listeners: Set<Int64> = Set()
-	
+	var listeners: Set<Int64> = Set()
+
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		let webConfig = WKWebViewConfiguration()
-        let userContentController = WKUserContentController()
-        userContentController.add(self, name: "native")
-        webConfig.userContentController = userContentController
+		let userContentController = WKUserContentController()
+		userContentController.add(self, name: "native")
+		webConfig.userContentController = userContentController
 		webView = WKWebView(frame: .zero, configuration: webConfig)
+		if #available(iOS 11.0, *) {
+			webView.scrollView.contentInsetAdjustmentBehavior = .never;
+		}
 		webView.navigationDelegate = self
 		webView.uiDelegate = self
 		view = webView
 	}
 
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+	func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
 		listeners.forEach { listener in
 			WebViewDelegate.onWebViewFinishedLoading(listener)
 		}
-    }
+	}
 
 	func loadUrl(url: String) {
 		webView.load(URLRequest(url: URL(string: url)!))
@@ -48,14 +51,14 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
 		}
 	}
 
-    func evaluateJavaScript(data: String) {
-        webView.evaluateJavaScript(data) { (_, error) in
-            if error != nil {
-                print(error!)
-            }
-        }
-    }
-   
+	func evaluateJavaScript(data: String) {
+		webView.evaluateJavaScript(data) { (_, error) in
+			if error != nil {
+				print(error!)
+			}
+		}
+	}
+
 	func addListener(listener: Int64) {
 		listeners.insert(listener)
 	}
@@ -96,17 +99,17 @@ func WebView_loadUrl(ptr: UnsafeMutablePointer<WebViewController>, url: UnsafePo
 
 @_cdecl("WebView_loadData")
 func WebView_loadData(ptr: UnsafeMutablePointer<WebViewController>, data: UnsafePointer<CChar>, mimeType: UnsafePointer<CChar>, encoding: UnsafePointer<CChar>) {
-    ptr.pointee.loadData(data: String.init(cString: data), mimeType: String.init(cString: mimeType), encoding: String.init(cString: encoding))
+	ptr.pointee.loadData(data: String.init(cString: data), mimeType: String.init(cString: mimeType), encoding: String.init(cString: encoding))
 }
 
 @_cdecl("WebView_loadFile")
 func WebView_loadFile(ptr: UnsafeMutablePointer<WebViewController>, name: UnsafePointer<CChar>, ext: UnsafePointer<CChar>, directory: UnsafePointer<CChar>) {
-    ptr.pointee.loadFile(name: String.init(cString: name), ext: String.init(cString: ext), directory: String.init(cString: directory))
+	ptr.pointee.loadFile(name: String.init(cString: name), ext: String.init(cString: ext), directory: String.init(cString: directory))
 }
 
 @_cdecl("WebView_evaluateJavaScript")
 func WebView_evaluateJavaScript(ptr: UnsafeMutablePointer<WebViewController>, data: UnsafePointer<CChar>) {
-    ptr.pointee.evaluateJavaScript(data: String.init(cString: data))
+	ptr.pointee.evaluateJavaScript(data: String.init(cString: data))
 }
 
 @_cdecl("WebView_addListener")

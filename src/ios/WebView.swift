@@ -52,23 +52,31 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
 	}
 
 	func loadUrl(url: String) {
-		webView.load(URLRequest(url: URL(string: url)!))
+		DispatchQueue.main.async {
+			self.webView.load(URLRequest(url: URL(string: url)!))
+		}
 	}
 
 	func loadData(data: String, mimeType: String, encoding: String) {
-		webView.loadHTMLString(data, baseURL: nil)
+		DispatchQueue.main.async {
+			self.webView.loadHTMLString(data, baseURL: nil)
+		}
 	}
 
 	func loadFile(name: String, ext: String, directory: String) {
-		if let indexURL = Bundle.main.url(forResource: name, withExtension: ext, subdirectory: directory) {
-			webView.loadFileURL(indexURL, allowingReadAccessTo: indexURL)
+		DispatchQueue.main.async {
+			if let indexURL = Bundle.main.url(forResource: name, withExtension: ext, subdirectory: directory) {
+				self.webView.loadFileURL(indexURL, allowingReadAccessTo: indexURL)
+			}
 		}
 	}
 
 	func evaluateJavaScript(data: String) {
-		webView.evaluateJavaScript(data) { (_, error) in
-			if error != nil {
-				print(error!)
+		DispatchQueue.main.async {
+			self.webView.evaluateJavaScript(data) { (_, error) in
+				if error != nil {
+					print(error!)
+				}
 			}
 		}
 	}

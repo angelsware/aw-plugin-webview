@@ -14,7 +14,7 @@ public class JsInterface {
 
 	public static native void onWebViewMessage(String data, long listener);
 	public static native void onWebViewError(String data, long listener);
-	public static native void onWebViewFinishedLoading(long listener);
+	public static native void onWebViewFinishedLoading(String url, long listener);
 
 	private static List sListeners = new ArrayList();
 
@@ -69,12 +69,12 @@ public class JsInterface {
 		});
 	}
 
-	public void onPageFinished() {
+	public void onPageFinished(final String url) {
 		AppActivity.getActivity().runOnUiThread(new Runnable() {
 			public void run() {
 				for (Iterator<Long> i = sListeners.iterator(); i.hasNext();) {
 					Long listener = i.next();
-					onWebViewFinishedLoading((long)listener);
+					onWebViewFinishedLoading(url, (long)listener);
 				}
 			}
 		});

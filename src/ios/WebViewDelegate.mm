@@ -7,8 +7,8 @@
     reinterpret_cast<WebView::IWebViewListener*>(id)->onWebViewMessage([message UTF8String]);
 }
 
-+(void) onWebViewFinishedLoading:(int64_t) id {
-    reinterpret_cast<WebView::IWebViewListener*>(id)->onWebViewFinishedLoading();
++(void) onWebViewFinishedLoading:(int64_t) id url:(NSString*) url {
+    reinterpret_cast<WebView::IWebViewListener*>(id)->onWebViewFinishedLoading([url UTF8String]);
 }
 
 @end

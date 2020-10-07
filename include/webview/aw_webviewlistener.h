@@ -7,7 +7,7 @@ namespace WebView {
 	public:
 		virtual void onWebViewMessage(const char* data) = 0;
 		virtual void onWebViewError(const char* data) = 0;
-		virtual void onWebViewFinishedLoading() = 0;
+		virtual void onWebViewFinishedLoading(const char* url) = 0;
 
 	protected:
 		virtual ~IWebViewListener() {}

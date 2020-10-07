@@ -136,7 +136,7 @@ public class WebView {
 
 		@Override
 		public void onPageFinished(android.webkit.WebView webView, String url) {
-			sJsInterface.onPageFinished();
+			sJsInterface.onPageFinished(url);
 		}
 
 		private boolean isOpenExternally(String url) {

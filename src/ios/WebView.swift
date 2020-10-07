@@ -34,7 +34,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
 
 	func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
 		listeners.forEach { listener in
-			WebViewDelegate.onWebViewFinishedLoading(listener)
+			WebViewDelegate.onWebViewFinishedLoading(listener, "")
 		}
 	}
 	

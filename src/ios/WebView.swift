@@ -27,6 +27,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, W
 		if #available(iOS 11.0, *) {
 			webView.scrollView.contentInsetAdjustmentBehavior = .never;
 		}
+		webView.scrollView.isScrollEnabled = false
 		webView.scrollView.bounces = false
 		webView.navigationDelegate = self
 		webView.uiDelegate = self
